@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FisioGest - Gestión de Citas Premium</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; color: #1e293b; scroll-behavior: smooth; }
+        .accent-color { color: #0ea5e9; }
+        .accent-bg { background: #0ea5e9; }
+        .card-shadow { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); }
+        .input-style { background: #f1f5f9; border: 1px solid #e2e8f0; transition: 0.3s; color: #1e293b; }
+        .input-style:focus { background: #ffffff; border-color: #0ea5e9; outline: none; box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2); }
+        .btn-medical { background: #0ea5e9; color: #ffffff; transition: 0.3s; font-weight: 700; border-radius: 16px; }
+        .btn-medical:hover { background: #0284c7; transform: translateY(-2px); box-shadow: 0 10px 15px rgba(14, 165, 233, 0.3); }
+        .img-clinic { border-radius: 24px; transition: 0.4s; filter: saturate(0.8); }
+        .img-clinic:hover { filter: saturate(1.2); transform: scale(1.02); }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <nav class="p-6 max-w-7xl mx-auto flex justify-between items-center">
+        <div class="text-2xl font-extrabold tracking-tighter flex items-center gap-2">
+            <div class="w-10 h-10 accent-bg rounded-xl flex items-center justify-center text-white"><i class="fas fa-hand-holding-medical"></i></div>
+            FISIO<span class="accent-color">GEST</span>
+        </div>
+        <div class="hidden md:block text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase">Salud Avanzada • A Coruña</div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-12">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+            
+            <div class="space-y-8">
+                <h1 class="text-5xl lg:text-7xl font-extrabold leading-tight tracking-tight text-slate-900">
+                    Tu recuperación <br><span class="accent-color italic">empieza aquí.</span>
+                </h1>
+                <p class="text-slate-500 text-lg leading-relaxed">
+                    Gestiona tu sesión de fisioterapia de forma inmediata. Sincronización en tiempo real con nuestra agenda clínica para garantizar tu atención sin esperas.
+                </p>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="flex items-center gap-3 p-4 card-shadow rounded-2xl">
+                        <i class="fas fa-calendar-check accent-color text-xl"></i>
+                        <span class="text-xs font-bold uppercase">Cita Confirmada</span>
+                    </div>
+                    <div class="flex items-center gap-3 p-4 card-shadow rounded-2xl">
+                        <i class="fas fa-clock accent-color text-xl"></i>
+                        <span class="text-xs font-bold uppercase">Sin Esperas</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-shadow p-8 lg:p-10 rounded-[2.5rem] border-t-4 border-sky-500">
+                <form id="reservaForm" class="space-y-5">
+                    <div>
+                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Tipo de Tratamiento</label>
+                        <select id="servicio" class="w-full input-style p-4 rounded-2xl" required>
+                            <option value="" disabled selected>Seleccione especialidad...</option>
+                            <option value="Fisioterapia General" data-duracion="60" data-barberos="barbero1,barbero2">Fisioterapia General (60 min) - 45€</option>
+                            <option value="Osteopatía" data-duracion="60" data-barberos="barbero1">Osteopatía Clínica (60 min) - 55€</option>
+                            <option value="Sesión Deportiva" data-duracion="30" data-barberos="barbero2">Descarga Deportiva (30 min) - 30€</option>
+                        </select>
+                    </div>
+
+                    <div id="wrapperPeluquero" class="opacity-30 pointer-events-none transition-all">
+                        <select id="peluquero" class="w-full input-style p-4 rounded-2xl"></select>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" id="nombre" placeholder="Nombre completo" class="w-full input-style p-4 rounded-2xl" required>
+                        <input type="tel" id="telefono" placeholder="Teléfono de contacto" class="w-full input-style p-4 rounded-2xl" required>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="date" id="fecha" class="w-full input-style p-4 rounded-2xl" required>
+                        <select id="hora" class="w-full input-style p-4 rounded-2xl" required>
+                            <option value="">Hora...</option>
+                        </select>
+                    </div>
+
+                    <div id="statusDia" class="text-center py-2 text-[10px] font-bold hidden"></div>
+
+                    <button type="submit" id="btn" class="w-full btn-medical py-5 shadow-lg shadow-sky-500/20 uppercase tracking-widest">
+                        Reservar Sesión
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <section class="max-w-7xl mx-auto px-6 py-20 border-t border-slate-100">
+        <h2 class="text-3xl font-extrabold text-slate-900 mb-10">Instalaciones y Especialidades</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=500" class="w-full aspect-square object-cover img-clinic">
+            <img src="https://images.unsplash.com/photo-1597457390030-9195d8889988?w=500" class="w-full aspect-square object-cover img-clinic">
+            <img src="https://images.unsplash.com/photo-1519823551278-64ac92734fb1?w=500" class="w-full aspect-square object-cover img-clinic">
+            <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=500" class="w-full aspect-square object-cover img-clinic">
+        </div>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-6 py-20">
+        <div class="grid lg:grid-cols-2 gap-16 items-start">
+            <div class="space-y-8">
+                <h3 class="text-4xl font-extrabold text-slate-900 italic">Clínica A Coruña</h3>
+                <div class="space-y-4">
+                    <p class="flex items-center gap-4 text-slate-500">
+                        <i class="fas fa-map-marker-alt accent-color"></i>
+                        Rúa de Juan Flórez, 42, 15004 A Coruña
+                    </p>
+                    <p class="flex items-center gap-4 text-slate-500">
+                        <i class="fas fa-phone-alt accent-color"></i>
+                        +34 981 123 456
+                    </p>
+                </div>
+                <div class="p-8 card-shadow rounded-[2rem] space-y-4">
+                    <h4 class="font-bold uppercase text-xs tracking-widest text-slate-400 border-b pb-4">Horario de Consultas</h4>
+                    <div class="flex justify-between text-sm"><span>Lunes a Viernes</span><span class="font-bold">09:00 - 21:00</span></div>
+                    <div class="flex justify-between text-sm accent-color"><span>Sábados</span><span class="font-bold">09:00 - 14:00</span></div>
+                </div>
+            </div>
+            <div class="rounded-[2.5rem] overflow-hidden border border-slate-200 h-[400px] shadow-2xl">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d11603.935104278153!2d-8.4111369!3d43.3619145!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd2e7cf075736727%3A0x21c251bb49f251c2!2sA%20Coru%C3%B1a!5e0!3m2!1ses!2ses!4v1700000000000!5m2!1ses!2ses" 
+                    width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-12 text-center text-slate-400 text-[10px] font-bold tracking-[0.3em] uppercase border-t border-slate-100">
+        © 2026 FisioGest Coruña • Tecnología Médica Avanzada
+    </footer>
+
+    <script>
+        // Mantenemos tu lógica de Google Script intacta
+        const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxlukyz6NR_NAaOyryy80lhPtHhbcFIKQLyufzSFkqzR5abKXqhDpTqmmLtkwQLY_rl/exec"; 
+
+        const servicio = document.getElementById('servicio');
+        const peluquero = document.getElementById('peluquero');
+        const wrapper = document.getElementById('wrapperPeluquero');
+        const fecha = document.getElementById('fecha');
+        const hora = document.getElementById('hora');
+        const status = document.getElementById('statusDia');
+        const btn = document.getElementById('btn');
+        const form = document.getElementById('reservaForm');
+
+        servicio.onchange = () => {
+            const lista = servicio.options[servicio.selectedIndex].dataset.barberos.split(',');
+            peluquero.innerHTML = '';
+            lista.forEach(b => {
+                const label = b === 'barbero1' ? 'Fisioterapeuta 1' : 'Fisioterapeuta 2';
+                peluquero.innerHTML += `<option value="${b}">${label}</option>`;
+            });
+            wrapper.style.opacity = "1"; wrapper.style.pointerEvents = "auto";
+            if(fecha.value) cargarHuecos();
+        };
+
+        [fecha, peluquero].forEach(el => el.onchange = cargarHuecos);
+
+        async function cargarHuecos() {
+            if(!fecha.value || !servicio.value || !peluquero.value) return;
+            hora.innerHTML = '<option>...</option>';
+            const dur = parseInt(servicio.options[servicio.selectedIndex].dataset.duracion);
+            try {
+                const res = await fetch(`${URL_SCRIPT}?peluquero=${peluquero.value}&fecha=${fecha.value}`);
+                const ocupados = await res.json();
+                const dSem = new Date(fecha.value).getUTCDay();
+                let slots = (dSem >= 1 && dSem <= 5) ? [...gen(9, 14), ...gen(16, 21)] : gen(9, 14);
+
+                const libres = slots.filter((s, i) => {
+                    if (ocupados.includes(s)) return false;
+                    if (dur === 60) {
+                        const siguienteSlot = slots[i+1];
+                        if (!siguienteSlot || ocupados.includes(siguienteSlot)) return false;
+                    }
+                    return true;
+                });
+                
+                status.classList.remove('hidden');
+                status.innerHTML = libres.length ? "HUECOS DISPONIBLES" : "DÍA COMPLETO";
+                status.className = libres.length ? "text-sky-600 text-[10px] font-bold mb-2" : "text-red-400 text-[10px] font-bold mb-2";
+                hora.innerHTML = libres.length ? '' : '<option disabled>Sin disponibilidad</option>';
+                libres.forEach(h => hora.innerHTML += `<option value="${h}">${h}</option>`);
+            } catch (e) { hora.innerHTML = '<option>?</option>'; }
+        }
+
+        function gen(i, f) {
+            let r = [];
+            for(let m = i*60; m < f*60; m+=30) r.push(`${Math.floor(m/60).toString().padStart(2,'0')}:${(m%60).toString().padStart(2,'0')}`);
+            return r;
+        }
+
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            if (btn.dataset.wa === "true") {
+                window.open(btn.dataset.link, '_blank');
+                location.reload();
+                return;
+            }
+            btn.innerText = "PROCESANDO RESERVA..."; btn.disabled = true;
+            const d = {
+                peluquero: peluquero.value,
+                nombre: document.getElementById('nombre').value,
+                telefono: document.getElementById('telefono').value,
+                fecha: fecha.value,
+                hora: hora.value,
+                servicio: servicio.options[servicio.selectedIndex].text,
+                duracion: servicio.options[servicio.selectedIndex].dataset.duracion
+            };
+            try {
+                await fetch(URL_SCRIPT, { method: 'POST', body: JSON.stringify(d) });
+                let num = d.telefono.replace(/\D/g, '');
+                if (num.length === 9) num = '34' + num;
+                const msj = `Hola, soy ${d.nombre}. He reservado mi cita de ${d.servicio} para el día ${d.fecha} a las ${d.hora}.`;
+                btn.disabled = false;
+                btn.dataset.wa = "true";
+                btn.dataset.link = `https://api.whatsapp.com/send?phone=${num}&text=${encodeURIComponent(msj)}`;
+                btn.innerText = "CONFIRMAR POR WHATSAPP";
+                btn.className = "w-full bg-green-500 text-white py-5 rounded-2xl font-black uppercase tracking-widest shadow-lg";
+                alert(`¡Cita registrada con éxito!\n\nPor favor, pulse el botón para enviar la confirmación clínica.`);
+            } catch (err) {
+                alert("Error de conexión");
+                btn.disabled = false;
+                btn.innerText = "REINTENTAR";
+            }
+        };
+    </script>
+</body>
+</html>
